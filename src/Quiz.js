@@ -6,9 +6,10 @@ import Loader from './components/Loader';
 import CurrentQuestion from './components/CurrentQuestion';
 import QuitScreen from './components/QuitScreen';
 import ErrorScreen from './components/ErrorScreen';
+import Timer from './components/Timer';
 
 function Quiz() {
-  const {questionNumber, moneyPyramid, showStartScreen, showExitScreen, isLoading, showQuitScreen, error, dispatch} = useQuiz();
+  const {questionNumber, moneyPyramid, showStartScreen, showExitScreen, isLoading, showQuitScreen, error, timeOver, dispatch, handleWrongAnswer} = useQuiz();
   
   return (
     <div className='app'>
@@ -16,9 +17,14 @@ function Quiz() {
         <>
           {isLoading ? <Loader /> : 
           <>
-            {error ? <ErrorScreen /> :
+            {error ? <ErrorScreen /> : timeOver ? handleWrongAnswer() :
             <>
               <div className="main">
+                <div className="top">
+                  <div className={`${questionNumber <= 9 && "timer"}`}>
+                    {questionNumber <= 9 && <Timer />}
+                  </div>
+                </div>
                 <div className="bottom">
                   <CurrentQuestion />
                   {showQuitScreen && <QuitScreen />}

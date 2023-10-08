@@ -3,7 +3,7 @@ import { useQuiz } from '../QuizContext'
 import LifeLine from './LifeLine';
 
 function CurrentQuestion() {
-  const {questions, questionNumber, selectedAnswer, options, doubleAttempt, dispatch, openExitScreen} = useQuiz();
+  const {questions, questionNumber, selectedAnswer, options, doubleAttempt, dispatch, handleWrongAnswer} = useQuiz();
   const [className, setClassName] = useState('answer');
 
   const question = questions[questionNumber].question;
@@ -20,29 +20,23 @@ function CurrentQuestion() {
     dispatch({type: "setSelectedAnswer", payload: a});
     setClassName('answer active');
     setClassName(a === correct ? 'answer correct' : 'answer wrong');
-    delay(1000, () => {
+    dispatch({type: "setFreezeTime", payload: true});
+    delay(5000, () => {
         if(doubleAttempt){
-            if(a === correct){
-                dispatch({type: "incrementQuestion"});
-            }
-            dispatch({type: "setDoubleAttempt"});
+          if(a === correct){
+            dispatch({type: "incrementQuestion"});
+          }
+          dispatch({type: "setDoubleAttempt"});
         }
         else{
-            if(a === correct){
-                dispatch({type: "incrementQuestion"});
-            }
-            else{
-              if(questionNumber > 9){
-                dispatch({type: "setEarned", payload: "₹ 25,00,000"});
-              }
-              else if(questionNumber > 4){
-                dispatch({type: "setEarned", payload: "₹ 80,000"});
-              }
-              else{
-                dispatch({type: "setEarned", payload: "₹ 0"});
-              }
-                openExitScreen();
-            }
+          if(a === correct){
+            dispatch({type: "setFreezeTime", payload: false});
+            dispatch({type: "incrementQuestion"});
+          }
+          else{
+            dispatch({type: "setFreezeTime", payload: false});
+            handleWrongAnswer();
+          }
         }
         // dispatch({type: "setShowCorrectAnswer", payload: false});
     })

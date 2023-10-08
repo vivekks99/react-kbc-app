@@ -17,7 +17,9 @@ function QuizProvider({children}){
             showCorrectAnswer: false,
             earned: "₹ 0",
             showQuitScreen: false,
-            error: ""
+            error: "",
+            timeOver: false,
+            freezeTime: false
         };
     }, []);
 
@@ -82,11 +84,21 @@ function QuizProvider({children}){
                 return{
                     ...state,
                     showQuitScreen: action.payload
-                }
+                };
             case "setError":
                 return{
                     ...state,
                     error: action.payload
+                };
+            case "setTimeOver":
+                return{
+                    ...state,
+                    timeOver: action.payload
+                };
+            case "setFreezeTime":
+                return{
+                    ...state,
+                    freezeTime: action.payload
                 }
             default:
                 throw new Error('Unkown Action');
@@ -115,7 +127,7 @@ function QuizProvider({children}){
         []
       );
 
-    const [{questions, status, questionNumber, isLoading, showStartScreen, showExitScreen, selectedAnswer, options, doubleAttempt, showCorrectAnswer, earned, showQuitScreen, error}, dispatch] = useReducer(reducer, initialState);
+    const [{questions, status, questionNumber, isLoading, showStartScreen, showExitScreen, selectedAnswer, options, doubleAttempt, showCorrectAnswer, earned, showQuitScreen, error, timeOver, freezeTime}, dispatch] = useReducer(reducer, initialState);
 
     function openStartScreen(){
         dispatch({type: "setEarned", payload: "₹ 0"});
@@ -131,6 +143,20 @@ function QuizProvider({children}){
     function closeStartScreen(){
       dispatch({type: "setShowStartScreen", payload: false});
       fetchQuestions();
+    }
+
+    function handleWrongAnswer(){
+        openExitScreen();
+        if(questionNumber > 9){
+            dispatch({type: "setEarned", payload: "₹ 25,00,000"});
+        }
+        else if(questionNumber > 4){
+            dispatch({type: "setEarned", payload: "₹ 80,000"});
+        }
+        else{
+            dispatch({type: "setEarned", payload: "₹ 0"});
+        }
+        dispatch({type: "setTimeOver", payload: false});
     }
 
     async function fetchQuestions(){
@@ -165,7 +191,7 @@ function QuizProvider({children}){
 
 
     return (
-        <QuizContext.Provider value={{questions, status, questionNumber, isLoading, showStartScreen, showExitScreen, selectedAnswer, options, doubleAttempt, showCorrectAnswer, moneyPyramid, earned, showQuitScreen, error, dispatch, openStartScreen, openExitScreen, closeStartScreen}}>
+        <QuizContext.Provider value={{questions, status, questionNumber, isLoading, showStartScreen, showExitScreen, selectedAnswer, options, doubleAttempt, showCorrectAnswer, moneyPyramid, earned, showQuitScreen, error, timeOver, freezeTime, dispatch, openStartScreen, openExitScreen, closeStartScreen, handleWrongAnswer}}>
             {children}
         </QuizContext.Provider>
     )
