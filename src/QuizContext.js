@@ -15,7 +15,9 @@ function QuizProvider({children}){
             options: [],
             doubleAttempt: 0,
             showCorrectAnswer: false,
-            earned: "₹ 0"
+            earned: "₹ 0",
+            showQuitScreen: false,
+            error: ""
         };
     }, []);
 
@@ -75,6 +77,16 @@ function QuizProvider({children}){
                 return{
                     ...state,
                     earned: action.payload
+                };
+            case "setShowQuitScreen":
+                return{
+                    ...state,
+                    showQuitScreen: action.payload
+                }
+            case "setError":
+                return{
+                    ...state,
+                    error: action.payload
                 }
             default:
                 throw new Error('Unkown Action');
@@ -84,26 +96,26 @@ function QuizProvider({children}){
     const moneyPyramid = useMemo(
         () =>
           [
-            { id: 0, amount: "₹ 100" },
-            { id: 1, amount: "₹ 200" },
-            { id: 2, amount: "₹ 300" },
-            { id: 3, amount: "₹ 500" },
-            { id: 4, amount: "₹ 1.000" },
-            { id: 5, amount: "₹ 2.000" },
-            { id: 6, amount: "₹ 4.000" },
-            { id: 7, amount: "₹ 8.000" },
-            { id: 8, amount: "₹ 16.000" },
-            { id: 9, amount: "₹ 32.000" },
-            { id: 10, amount: "₹ 64.000" },
-            { id: 11, amount: "₹ 125.000" },
-            { id: 12, amount: "₹ 250.000" },
-            { id: 13, amount: "₹ 500.000" },
-            { id: 14, amount: "₹ 1.000.000" },
+            { id: 0, amount: "₹ 5,000" },
+            { id: 1, amount: "₹ 10,000" },
+            { id: 2, amount: "₹ 20,000" },
+            { id: 3, amount: "₹ 40,000" },
+            { id: 4, amount: "₹ 80,000" },
+            { id: 5, amount: "₹ 1,60,000" },
+            { id: 6, amount: "₹ 3,20,000" },
+            { id: 7, amount: "₹ 6,40,000" },
+            { id: 8, amount: "₹ 12,50,000" },
+            { id: 9, amount: "₹ 25,00,000" },
+            { id: 10, amount: "₹ 50,00,000" },
+            { id: 11, amount: "₹ 1,00,00,000" },
+            { id: 12, amount: "₹ 5,00,00,000" },
+            { id: 13, amount: "₹ 7,00,00,000" },
+            { id: 14, amount: "₹ 10,00,00,000" },
           ].reverse(),
         []
       );
 
-    const [{questions, status, questionNumber, isLoading, showStartScreen, showExitScreen, selectedAnswer, options, doubleAttempt, showCorrectAnswer, earned}, dispatch] = useReducer(reducer, initialState);
+    const [{questions, status, questionNumber, isLoading, showStartScreen, showExitScreen, selectedAnswer, options, doubleAttempt, showCorrectAnswer, earned, showQuitScreen, error}, dispatch] = useReducer(reducer, initialState);
 
     function openStartScreen(){
         dispatch({type: "setEarned", payload: "₹ 0"});
@@ -113,6 +125,7 @@ function QuizProvider({children}){
     function openExitScreen(){
         dispatch({type: "setQuestionNumber", payload: 0});
         dispatch({type: "setShowExitScreen", payload: true});
+        dispatch({type: "setShowQuitScreen", payload: false});
     }
     
     function closeStartScreen(){
@@ -121,24 +134,38 @@ function QuizProvider({children}){
     }
 
     async function fetchQuestions(){
-        dispatch({type: "setIsLoading", payload: true});
-        const res = await fetch(`https://opentdb.com/api.php?amount=16&type=multiple`);
-        const data = await res.json();
-        dispatch({type: "setQuestions", payload: data.results});
-        dispatch({type: "setIsLoading", payload: false});
-        console.log(data.results);
+        try{
+            dispatch({type: "setIsLoading", payload: true});
+            dispatch({type: "setError", payload: ""});
+            const res = await fetch(`https://opentdb.com/api.php?amount=16&type=multiple`);
+            if(!res.ok) throw new Error("Something went wrong while fetching Questions");
+            const data = await res.json();
+            if (data.response_code !== 0) throw new Error("Something went wrong while fetching Questions");
+            dispatch({type: "setQuestions", payload: data.results});
+            dispatch({type: "setError", payload: ""});
+            console.log(data.results);
+        }
+        catch(err){
+            console.log(err);
+            if(err.name !== "AbortError"){
+                dispatch({type: "setError", payload: err.message});
+            }
+        }
+        finally{
+            dispatch({type: "setIsLoading", payload: false});
+        }
     }
 
     useEffect(() => {
         questionNumber > 0 && dispatch({type: "setEarned", payload: moneyPyramid.find((m) => m.id === questionNumber - 1).amount});
-    }, [questionNumber, moneyPyramid, dispatch]);
+    }, [questionNumber, moneyPyramid]);
     useEffect(() => {
         questionNumber > 14 && openExitScreen();
     }, [questionNumber]);
 
 
     return (
-        <QuizContext.Provider value={{questions, status, questionNumber, isLoading, showStartScreen, showExitScreen, selectedAnswer, options, doubleAttempt, showCorrectAnswer, moneyPyramid, earned, dispatch, openStartScreen, openExitScreen, closeStartScreen}}>
+        <QuizContext.Provider value={{questions, status, questionNumber, isLoading, showStartScreen, showExitScreen, selectedAnswer, options, doubleAttempt, showCorrectAnswer, moneyPyramid, earned, showQuitScreen, error, dispatch, openStartScreen, openExitScreen, closeStartScreen}}>
             {children}
         </QuizContext.Provider>
     )

@@ -32,10 +32,19 @@ function CurrentQuestion() {
                 dispatch({type: "incrementQuestion"});
             }
             else{
+              if(questionNumber > 9){
+                dispatch({type: "setEarned", payload: "₹ 25,00,000"});
+              }
+              else if(questionNumber > 4){
+                dispatch({type: "setEarned", payload: "₹ 80,000"});
+              }
+              else{
+                dispatch({type: "setEarned", payload: "₹ 0"});
+              }
                 openExitScreen();
             }
         }
-        dispatch({type: "setShowCorrectAnswer", payload: false});
+        // dispatch({type: "setShowCorrectAnswer", payload: false});
     })
   }
 
