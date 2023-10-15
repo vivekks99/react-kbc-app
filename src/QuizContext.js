@@ -6,6 +6,7 @@ function QuizProvider({children}){
     
     const initialState = useMemo(() => {
         return {
+            userName: "",
             questions: [],
             questionNumber: 0,
             isLoading: false,
@@ -25,6 +26,11 @@ function QuizProvider({children}){
 
     function reducer(state, action){
         switch(action.type){
+            case "setUserName":
+                return{
+                    ...state,
+                    userName: action.payload
+                }
             case "setQuestions":
                 return{
                     ...state,
@@ -127,7 +133,7 @@ function QuizProvider({children}){
         []
       );
 
-    const [{questions, status, questionNumber, isLoading, showStartScreen, showExitScreen, selectedAnswer, options, doubleAttempt, showCorrectAnswer, earned, showQuitScreen, error, timeOver, freezeTime}, dispatch] = useReducer(reducer, initialState);
+    const [{userName, questions, status, questionNumber, isLoading, showStartScreen, showExitScreen, selectedAnswer, options, doubleAttempt, showCorrectAnswer, earned, showQuitScreen, error, timeOver, freezeTime}, dispatch] = useReducer(reducer, initialState);
 
     function openStartScreen(){
         dispatch({type: "setEarned", payload: "₹ 0"});
@@ -191,7 +197,7 @@ function QuizProvider({children}){
 
 
     return (
-        <QuizContext.Provider value={{questions, status, questionNumber, isLoading, showStartScreen, showExitScreen, selectedAnswer, options, doubleAttempt, showCorrectAnswer, moneyPyramid, earned, showQuitScreen, error, timeOver, freezeTime, dispatch, openStartScreen, openExitScreen, closeStartScreen, handleWrongAnswer}}>
+        <QuizContext.Provider value={{userName, questions, status, questionNumber, isLoading, showStartScreen, showExitScreen, selectedAnswer, options, doubleAttempt, showCorrectAnswer, moneyPyramid, earned, showQuitScreen, error, timeOver, freezeTime, dispatch, openStartScreen, openExitScreen, closeStartScreen, handleWrongAnswer}}>
             {children}
         </QuizContext.Provider>
     )

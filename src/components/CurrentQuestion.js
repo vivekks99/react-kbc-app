@@ -38,7 +38,7 @@ function CurrentQuestion() {
             handleWrongAnswer();
           }
         }
-        // dispatch({type: "setShowCorrectAnswer", payload: false});
+        dispatch({type: "setShowCorrectAnswer", payload: false});
     })
   }
 

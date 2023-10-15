@@ -15,7 +15,7 @@ function Timer() {
     }, [timer, freezeTime, dispatch]);
   
     useEffect(() => {
-      setTimer(questionNumber <= 4 ? 10 : 20);
+      setTimer(questionNumber <= 4 ? 30 : 60);
     }, [questionNumber]);
     return timer;
 }
