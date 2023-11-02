@@ -29,7 +29,7 @@ function StartScreen() {
           </div>
           <div className='life-line-content'>
             <img src="/DoubleDip.png" alt="" className='life-line-icon' />
-            <p>This Life-Line will give you one two chances to make your guess.</p>
+            <p>This Life-Line will give you two chances to make your guess.</p>
           </div>
           <div className='life-line-content'>
             <img src="/ExpertAdvice.png" alt="" className='life-line-icon' />
