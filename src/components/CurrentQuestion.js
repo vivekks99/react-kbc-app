@@ -30,14 +30,13 @@ function CurrentQuestion() {
         }
         else{
           if(a === correct){
-            dispatch({type: "setFreezeTime", payload: false});
             dispatch({type: "incrementQuestion"});
           }
           else{
-            dispatch({type: "setFreezeTime", payload: false});
             handleWrongAnswer();
           }
         }
+        dispatch({type: "setFreezeTime", payload: false});
         dispatch({type: "setShowCorrectAnswer", payload: false});
     })
   }
