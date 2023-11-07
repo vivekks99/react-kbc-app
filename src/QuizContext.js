@@ -175,10 +175,8 @@ function QuizProvider({children}){
             if (data.response_code !== 0) throw new Error("Something went wrong while fetching Questions");
             dispatch({type: "setQuestions", payload: data.results});
             dispatch({type: "setError", payload: ""});
-            console.log(data.results);
         }
         catch(err){
-            console.log(err);
             if(err.name !== "AbortError"){
                 dispatch({type: "setError", payload: err.message});
             }

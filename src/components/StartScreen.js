@@ -1,8 +1,17 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useQuiz } from '../QuizContext'
 
 function StartScreen() {
   const {closeStartScreen, userName, dispatch} = useQuiz();
+  const [tiltDevice, setTiltDevice] = useState(
+    window.matchMedia("(max-width: 951px)").matches
+  );
+
+  useEffect(() => {
+    window
+    .matchMedia("(max-width: 951px)")
+    .addEventListener('change', e => setTiltDevice( e.matches ));
+  }, []);
 
   function handleFormSubmit(e){
     e.preventDefault();
@@ -13,6 +22,9 @@ function StartScreen() {
   return (
     <div className="start-screen kbc-bg">
       <h1>Welcome To KBC</h1>
+      {tiltDevice &&
+        <p className='tilt'>Please Tilt Your Device for Better Experience.</p>
+      }
       <div className='content'>
         <div className="kbc-rules">
           <h2>Rules:</h2>
