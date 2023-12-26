@@ -3,7 +3,7 @@ import { useQuiz } from '../QuizContext'
 import LifeLine from './LifeLine';
 
 function CurrentQuestion() {
-  const {questions, questionNumber, selectedAnswer, options, doubleAttempt, dispatch, handleWrongAnswer} = useQuiz();
+  const {questions, questionNumber, selectedAnswer, options, doubleAttempt, dispatch, handleWrongAnswer, freezeTime} = useQuiz();
   const [className, setClassName] = useState('answer');
 
   const question = questions[questionNumber].question;
@@ -54,7 +54,7 @@ function CurrentQuestion() {
       <LifeLine correct={correct} wrong={wrong} />
       <div className="answers">
         {options.map((i) => (
-            <button key={i} className={selectedAnswer === i ? className : 'answer'} onClick={() => handleSelectedAnswer(i)} value={i}>{i}</button>
+            <button key={i} className={selectedAnswer === i ? className : 'answer'} onClick={() => handleSelectedAnswer(i)} value={i} disabled={freezeTime}>{i}</button>
         ))}
       </div>
     </div>
